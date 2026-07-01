@@ -38,5 +38,4 @@ const RefreshToken = async (
     CatchError(err, res, "failed to refresh token");
   }
 };
-
 export default RefreshToken;

@@ -29,18 +29,17 @@ const AuthMiddleware = async (
       process.env.AUTH_SECRET!,
     )) as JwtPayload;
 
-    req.session={
-        id:payload.id,
-        email:payload.email,
-        mobile:payload.mobile,
-        fullname:payload.fullname,
-        image:payload.image
-
-    }
-    next()
+    req.session = {
+      id: payload.id,
+      email: payload.email,
+      mobile: payload.mobile,
+      fullname: payload.fullname,
+      image: payload.image,
+    };
+    next();
   } catch (err) {
     CatchError(err, res, "Unauthorized");
   }
 };
 
-export default AuthMiddleware
+export default AuthMiddleware;
