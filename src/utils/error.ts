@@ -13,7 +13,7 @@ export const TryError=(message:string,status:number=500)=>{
 }
 
 
-const CatchError=(err:unknown,res:Response,prodMessage:string="Internal server error ")=>{
+export const CatchError=(err:unknown,res:Response,prodMessage:string="Internal server error ")=>{
     if(err instanceof Error){
         const message=(process.env.NODE_ENV==="dev"?err.message:prodMessage)
         const status=(err as ErrorMessage).status||500
