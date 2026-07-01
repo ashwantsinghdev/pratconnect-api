@@ -38,6 +38,15 @@ const getOptions = (tokenType: TokenType) => {
   };
 };
 
+export const signup = async (req: Request, res: Response) => {
+  try {
+    await AuthModel.create(req.body);
+    res.json({ message: "Signup success" });
+  } catch (err: unknown) {
+    if (err instanceof Error) res.status(500).json({ message: err.message });
+  }
+};
+
 export const login = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
