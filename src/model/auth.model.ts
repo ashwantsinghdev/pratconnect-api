@@ -30,7 +30,7 @@ const authSchema = new Schema({
     required: true,
     trim: true,
   },
-  refreshTolen: {
+  refreshToken: {
     type: String,
   },
   expiry: {
@@ -46,7 +46,7 @@ authSchema.pre("save",async function(){
 })
 
 authSchema.pre("save",function(){
-    this.refreshTolen=null
+    this.refreshToken=null
     this.expiry=null
 })
 

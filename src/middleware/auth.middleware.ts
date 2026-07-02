@@ -21,11 +21,11 @@ const AuthMiddleware = async (
   next: NextFunction,
 ) => {
   try {
-    const accesToken = req.cookies.accesToken;
-    if (!accesToken) throw TryError("Unauthorized", 404);
+    const accessToken = req.cookies.accessToken;
+    if (!accessToken) throw TryError("Unauthorized", 404);
 
     const payload = (await jwt.verify(
-      accesToken,
+      accessToken,
       process.env.AUTH_SECRET!,
     )) as JwtPayload;
 

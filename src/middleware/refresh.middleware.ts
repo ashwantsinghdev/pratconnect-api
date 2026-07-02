@@ -23,7 +23,7 @@ const RefreshToken = async (
 
     const isExpired = today.isAfter(expiry);
 
-    if (!isExpired) throw TryError("Failed to refresh token", 401);
+    if (isExpired) throw TryError("Failed to refresh token", 401);
 
     req.session = {
       id: user._id,
