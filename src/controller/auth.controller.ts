@@ -129,8 +129,7 @@ export const updateProfilePicture = async (
   res: Response,
 ) => {
   try {
-    const path = `{${process.env.S3_URL}/${req.body.path}}`;
-    if (!path || !req.session)
+const path = `${process.env.S3_URL}/${req.body.path}`;    if (!path || !req.session)
       throw TryError("Failed to update profile picture", 400);
 
     await AuthModel.updateOne(

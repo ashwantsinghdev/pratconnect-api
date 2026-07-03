@@ -48,11 +48,13 @@ export const downloadObject=async(path:string,expiry:number=60)=>{
 }
 
 export const uploadObject=async(path:string,type:string,acl:ACLType="private")=>{
-  const command =new PutObjectCommand({
-    Bucket:process.env.S3_BUCKET,
-    Key:path,
-    ContentType:type,
-  })
+  const command = new PutObjectCommand({
+    Bucket: process.env.S3_BUCKET,
+    Key: path,
+    ContentType: type,
+    ACL:acl
+    
+  });
 
   const url = await getSignedUrl(conn, command, { expiresIn: 60 });
   return url
