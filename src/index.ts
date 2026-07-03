@@ -10,6 +10,8 @@ import cors from "cors"
 import cookieParser from "cookie-parser"
 import AuthRouter from "./router/auth.router"
 import corsConfig from "./utils/cors"
+import AuthMiddleware from "./middleware/auth.middleware"
+import StorageRouter from "./router/storage.router"
 
 const app = express();
 const server = createServer(app);
@@ -21,5 +23,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 
+
 app.use("/auth",AuthRouter)
+app.use("/storage",AuthMiddleware,StorageRouter)
 
