@@ -18,14 +18,14 @@ export const addFriend = async (req: SessionInterface, res: Response) => {
 export const fetchFriend = async (req: SessionInterface, res: Response) => {
   try {
     const userId = req.session?.id;
-    const freinds = await FriendModel.find({
+    const friends = await FriendModel.find({
       status: "accepted",
       $or: [{ user: userId }, { friend: userId }],
     })
       .populate("friend")
       .populate("user");
 
-    const modified = freinds.map((item: any) => {
+    const modified = friends.map((item: any) => {
       const isUser = item.user._id.toString() === userId;
       return {
         _id: item._id,
@@ -38,7 +38,7 @@ export const fetchFriend = async (req: SessionInterface, res: Response) => {
 
     res.json(modified);
   } catch (err) {
-    CatchError(err, res, "Failed to add freind request");
+    CatchError(err, res, "Failed to add friend request");
   }
 };
 
@@ -53,7 +53,7 @@ export const deleteFriend = async (req: SessionInterface, res: Response) => {
 
 export const suggestedFriend = async (req: SessionInterface, res: Response) => {
   try {
-    const friends = await FriendModel.aggregate([
+    const friends = await AuthModel.aggregate([
       {
         $match: {
           _id: { $ne: new mongoose.Types.ObjectId(req.session?.id) },
