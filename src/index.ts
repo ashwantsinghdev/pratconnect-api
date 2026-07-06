@@ -15,6 +15,7 @@ import StorageRouter from "./router/storage.router"
 import FriendRouter from "./router/friend.router"
 import StatusSocket from "./socket/status.socket"
 import { Server } from "socket.io"
+import PostRouter from "./router/post.router"
 
 
 const app = express();
@@ -34,6 +35,8 @@ app.use(express.urlencoded({ extended: false }));
 app.use("/auth",AuthRouter)
 app.use("/storage",AuthMiddleware,StorageRouter)
 app.use("/friend", AuthMiddleware, FriendRouter);
+app.use("/post", AuthMiddleware, PostRouter);
+
 
 
 StatusSocket(io)
