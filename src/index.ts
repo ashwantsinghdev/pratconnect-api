@@ -42,4 +42,5 @@ app.use("/post", AuthMiddleware, PostRouter);
 
 
 StatusSocket(io)
+ChatSocket(io)
 
