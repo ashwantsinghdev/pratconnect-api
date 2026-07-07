@@ -16,7 +16,8 @@ import FriendRouter from "./router/friend.router"
 import StatusSocket from "./socket/status.socket"
 import { Server } from "socket.io"
 import PostRouter from "./router/post.router"
-
+import ChatRouter from "./router/chat.router"
+import ChatSocket from "./socket/chat.socket"
 
 const app = express();
 const server = createServer(app);
@@ -35,6 +36,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use("/auth",AuthRouter)
 app.use("/storage",AuthMiddleware,StorageRouter)
 app.use("/friend", AuthMiddleware, FriendRouter);
+app.use("/chat", ChatRouter);
 app.use("/post", AuthMiddleware, PostRouter);
 
 
