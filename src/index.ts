@@ -22,10 +22,14 @@ import ChatSocket from "./socket/chat.socket"
 const app = express();
 const server = createServer(app);
 server.listen(process.env.PORT || 8080);
+
 const io=new Server(server,{cors:corsConfig})
+StatusSocket(io);
+ChatSocket(io);
 
 
 app.use(cors(corsConfig));
+
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -41,6 +45,5 @@ app.use("/post", AuthMiddleware, PostRouter);
 
 
 
-StatusSocket(io)
-ChatSocket(io)
+
 
