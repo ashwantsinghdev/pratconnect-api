@@ -29,7 +29,7 @@ export const fetchChats = async(req: SessionInterface, res: Response) => {
         { from: req.session.id, to: req.params.to },
         { from: req.params.to, to: req.session.id },
       ],
-    }).populate("from","fullname email mobile").lean()
+    }).populate("from","fullname email mobile image").lean()
 
     const modifiedChats = await Promise.all(
       chats.map(async (item) => {

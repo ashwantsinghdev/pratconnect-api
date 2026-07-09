@@ -1,5 +1,4 @@
 import mongoose,{model,Schema} from "mongoose";
-import { error } from "node:console";
 
 const friendSchema=new Schema({
     user:{

@@ -53,62 +53,65 @@ export const deleteFriend = async (req: SessionInterface, res: Response) => {
 
 export const suggestedFriend = async (req: SessionInterface, res: Response) => {
   try {
+    const userId = req.session?.id;
+
     const friends = await AuthModel.aggregate([
       {
         $match: {
-          _id: { $ne: new mongoose.Types.ObjectId(req.session?.id) },
+          _id: { $ne: new mongoose.Types.ObjectId(userId) },
         },
       },
-      {$sample:{size:5}},
-      {$project:{fullname:1,image:1,createdAt:1}},
+      { $sample: { size: 5 } },
+      { $project: { fullname: 1, image: 1, createdAt: 1 } },
     ]);
 
-    const modified=await Promise.all(
-        friends.map(async(item)=>{
-            const count =await  FriendModel.countDocuments({friend:item._id})
-            return count ===0?item:null
+    const modified = await Promise.all(
+      friends.map(async (item) => {
+       
+        const count = await FriendModel.countDocuments({
+          $or: [
+            { user: userId, friend: item._id },
+            { user: item._id, friend: userId },
+          ],
+        });
+        return count === 0 ? item : null;
+      }),
+    );
 
-        })
-    )
-
-    const filtered=modified.filter((item:any)=> item!==null)
-    res.json(filtered)
+    const filtered = modified.filter((item: any) => item !== null);
+    res.json(filtered);
   } catch (err) {
     CatchError(err, res, "failed to suggest friend");
   }
 };
 
+export const friendRequest = async (req: SessionInterface, res: Response) => {
+  try {
+    if (!req.session) throw TryError("Failed to fetch friend request");
 
-export const friendRequest=async(req:SessionInterface,res:Response)=>{
-    try {
-        if(!req.session) throw TryError("Failed to fetch friend request")
+    const friends = await FriendModel.find({
+      friend: req.session.id,
+      status: "requested",
+    }).populate("user", "fullname image");
+    res.json(friends);
+  } catch (err) {
+    CatchError(err, res, "Failed to request friend");
+  }
+};
 
-            const friends=await FriendModel.find({
-                friend:req.session.id,
-                status:"requested",
+export const updateFriendStatus = async (
+  req: SessionInterface,
+  res: Response,
+) => {
+  try {
+    if (!req.session) throw TryError("Failed to update status");
 
-
-            }).populate("user","fullname image")
-            res.json(friends)
-        
-    } catch (err) {
-        CatchError(err,res,"Failed to request friend")
-        
-    }
-}
-
-export const updateFriendStatus=async(req:SessionInterface,res:Response)=>{
-    try {
-        if(!req.session) throw TryError("Fai;ed to update status")
-
-            await FriendModel.updateOne(
-                {_id:req.params.id},
-                {$set:{status:req.body.status}}
-            )
-            res.json({message:"Friend status updated"})
-        
-    } catch (err) {
-        CatchError(err,res,"Failed to update friend status")
-        
-    }
-}
+    await FriendModel.updateOne(
+      { _id: req.params.id },
+      { $set: { status: req.body.status } },
+    );
+    res.json({ message: "Friend status updated" });
+  } catch (err) {
+    CatchError(err, res, "Failed to update friend status");
+  }
+};
