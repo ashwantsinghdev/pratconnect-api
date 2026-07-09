@@ -18,6 +18,9 @@ import { Server } from "socket.io"
 import PostRouter from "./router/post.router"
 import ChatRouter from "./router/chat.router"
 import ChatSocket from "./socket/chat.socket"
+import VideoSocket from "./socket/video.socket"
+import TwilioRouter from "./router/twilio.router"
+
 
 const app = express();
 const server = createServer(app);
@@ -26,6 +29,7 @@ server.listen(process.env.PORT || 8080);
 const io=new Server(server,{cors:corsConfig})
 StatusSocket(io);
 ChatSocket(io);
+VideoSocket(io);
 
 
 app.use(cors(corsConfig));
@@ -42,6 +46,7 @@ app.use("/storage",AuthMiddleware,StorageRouter)
 app.use("/friend", AuthMiddleware, FriendRouter);
 app.use("/chat", ChatRouter);
 app.use("/post", AuthMiddleware, PostRouter);
+app.use("/twilio", TwilioRouter);
 
 
 
