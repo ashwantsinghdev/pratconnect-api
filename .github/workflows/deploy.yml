@@ -42,7 +42,7 @@ jobs:
             --name app \
             -e NODE_ENV=prod \
             -e DB="${{ secrets.DB }}" \
-            -e PORT="${{ secrets.PORT }}" \
+            -e PORT=8080 \
             -e CLIENT="${{ secrets.CLIENT }}" \
             -e AUTH_SECRET="${{ secrets.AUTH_SECRET }}" \
             -e AWS_ACCESS_KEY_ID="${{ secrets.AWS_ACCESS_KEY_ID }}" \

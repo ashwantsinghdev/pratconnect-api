@@ -3,6 +3,8 @@ dotenv.config()
 
 import mongoose from "mongoose"
 mongoose.connect(process.env.DB!)
+.then(()=>console.log("Database connected"))
+.catch(()=>console.log("failed to connect with database"))
 
 import  express, { Request, Response }  from "express"
 import { createServer } from "http"
