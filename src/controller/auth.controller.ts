@@ -154,13 +154,16 @@ export const logout = (req: Request, res: Response) => {
     const options = {
       httpOnly: true,
       maxAge: 0,
-      secure: false,
-      domain: "localhost",
+      secure: process.env.NODE_ENV === "dev" ? false : true,
+      domain:
+        process.env.NODE_ENV === "dev"
+          ? "localhost"
+          : process.env.CLIENT!.split("//").pop(),
     };
     res.clearCookie("accessToken", options);
     res.clearCookie("refreshToken", options);
     res.json("Logout success");
   } catch (err) {
-    CatchError(err, res, "Failed to update profile picture");
+    CatchError(err, res, "Failed to logout");
   }
 };
