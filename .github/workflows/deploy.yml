@@ -33,3 +33,12 @@ jobs:
         host: ${{secrets.EC2_HOST}}
         username: ${{secrets.EC2_USERNAME}}
         key: ${{secrets.EC2_SECRET}}
+        envs: |
+          DOCKER_USERNAME=${{secrets.DOCKER_USERNAME}}
+          DOCKER_PASSWORD=${{secrets.DOCKER_PASSWORD}}
+        script: |
+          docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+          docker pull ashwantsingh/pratconnect:latest
+          docker stop app || true
+          docker rm app || true
+          docker run -d 8080:8080 --name app ashwantsingh/pratconnect:latest
