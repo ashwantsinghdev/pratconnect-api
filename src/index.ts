@@ -44,9 +44,9 @@ app.use(express.urlencoded({ extended: false }));
 app.use("/auth",AuthRouter)
 app.use("/storage",AuthMiddleware,StorageRouter)
 app.use("/friend", AuthMiddleware, FriendRouter);
-app.use("/chat", ChatRouter);
+app.use("/chat",AuthMiddleware, ChatRouter);
 app.use("/post", AuthMiddleware, PostRouter);
-app.use("/twilio", TwilioRouter);
+app.use("/twilio", AuthMiddleware, TwilioRouter);
 
 
 

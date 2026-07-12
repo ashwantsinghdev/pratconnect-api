@@ -5,6 +5,7 @@ import { downloadObject, uploadObject, isFileExist } from "../utils/s3";
 export const downloadFile = async (req: Request, res: Response) => {
   try {
     const path = req.body?.path;
+    const filename = req.body?.filename;
 
     if (!path) throw TryError("Path is missing failed to generate file url");
 
@@ -12,8 +13,8 @@ export const downloadFile = async (req: Request, res: Response) => {
 
     if (!isExist) throw TryError("File not exist ", 404);
 
-    const url = await downloadObject(path);
-    res.json({url});
+    const url = await downloadObject(path, 60, filename);
+    res.json({ url });
   } catch (err) {
     CatchError(err, res, "Failed to generate download url");
   }

@@ -27,6 +27,7 @@ const ChatSocket = (io: Server) => {
           message: payload.message,
           file: {
             path: await downloadObject(payload.file.path),
+            key: payload.file.path,
             type: payload.file.type,
           },
         });

@@ -3,6 +3,7 @@ import FriendModel from "../model/friend.model";
 import { CatchError, TryError } from "../utils/error";
 import { SessionInterface } from "../middleware/auth.middleware";
 import AuthModel from "../model/auth.model";
+import ChatModel from "../model/chat.model";
 import mongoose from "mongoose";
 
 export const addFriend = async (req: SessionInterface, res: Response) => {
@@ -25,16 +26,37 @@ export const fetchFriend = async (req: SessionInterface, res: Response) => {
       .populate("friend")
       .populate("user");
 
-    const modified = friends.map((item: any) => {
-      const isUser = item.user._id.toString() === userId;
-      return {
-        _id: item._id,
-        friend: isUser ? item.friend : item.user,
-        status: item.status,
-        createdAt: item.createdAt,
-        updated: item.updatedAt,
-      };
-    });
+    const modified = await Promise.all(
+      friends.map(async (item: any) => {
+        const isUser = item.user._id.toString() === userId;
+        const friendUser = isUser ? item.friend : item.user;
+
+        const lastChat = await ChatModel.findOne({
+          $or: [
+            { from: userId, to: friendUser._id },
+            { from: friendUser._id, to: userId },
+          ],
+        })
+          .sort({ createdAt: -1 })
+          .lean();
+
+        return {
+          _id: item._id,
+          friend: friendUser,
+          status: item.status,
+          createdAt: item.createdAt,
+          updated: item.updatedAt,
+          lastMessage: lastChat
+            ? {
+                text: lastChat.message,
+                isAttachment: !!lastChat.file,
+                fileType: lastChat.file?.type || null,
+                createdAt: lastChat.createdAt,
+              }
+            : null,
+        };
+      }),
+    );
 
     res.json(modified);
   } catch (err) {
@@ -44,13 +66,19 @@ export const fetchFriend = async (req: SessionInterface, res: Response) => {
 
 export const deleteFriend = async (req: SessionInterface, res: Response) => {
   try {
-    await FriendModel.deleteOne({ _id: req.params.id });
+    const result = await FriendModel.deleteOne({
+      _id: req.params.id,
+      $or: [{ user: req.session?.id }, { friend: req.session?.id }],
+    });
+
+    if (result.deletedCount === 0)
+      throw TryError("Friend not found or not yours", 403);
+
     res.json({ message: "Friend deleted" });
   } catch (err) {
     CatchError(err, res, "failed to delete friend");
   }
 };
-
 export const suggestedFriend = async (req: SessionInterface, res: Response) => {
   try {
     const userId = req.session?.id;
@@ -67,7 +95,6 @@ export const suggestedFriend = async (req: SessionInterface, res: Response) => {
 
     const modified = await Promise.all(
       friends.map(async (item) => {
-       
         const count = await FriendModel.countDocuments({
           $or: [
             { user: userId, friend: item._id },

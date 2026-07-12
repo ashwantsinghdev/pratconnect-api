@@ -34,18 +34,25 @@ export const isFileExist=async(path:string)=>{
     }
 }
 
-export const downloadObject=async(path:string,expiry:number=60)=>{
-  
-    const option = {
-      Bucket: process.env.S3_BUCKET,
-      Key: path,
-    };
+export const downloadObject = async (
+  path: string,
+  expiry: number = 60,
+  filename?: string,
+) => {
+  const option: any = {
+    Bucket: process.env.S3_BUCKET,
+    Key: path,
+  };
+
+  if (filename) {
+    option.ResponseContentDisposition = `attachment; filename="${filename}"`;
+  }
 
   const command = new GetObjectCommand(option);
 
-    const url=await getSignedUrl(conn,command,{expiresIn:60})
-    return url
-}
+  const url = await getSignedUrl(conn, command, { expiresIn: expiry });
+  return url;
+};
 
 export const uploadObject=async(path:string,type:string,acl:ACLType="private")=>{
   const command = new PutObjectCommand({

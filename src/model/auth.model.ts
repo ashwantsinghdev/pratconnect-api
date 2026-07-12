@@ -46,8 +46,10 @@ authSchema.pre("save",async function(){
 })
 
 authSchema.pre("save",function(){
-    this.refreshToken=null
-    this.expiry=null
+    if (this.isNew) {
+      this.refreshToken = null;
+      this.expiry = null;
+    }
 })
 
 const AuthModel=model("Auth",authSchema)

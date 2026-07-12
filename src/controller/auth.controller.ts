@@ -12,7 +12,7 @@ import { v4 as uuid } from "uuid";
 import moment from "moment";
 
 const accessTokenExpiry = "10m";
-const tenMinutesInMs = 7 * 24 * 60 * 60 * 1000;
+const tenMinutesInMs = 10 * 60 * 1000;
 const sevenDaysInMs = 7 * 24 * 60 * 60 * 1000;
 
 type TokenType = "at" | "rt";
@@ -43,7 +43,11 @@ export const signup = async (req: Request, res: Response) => {
     await AuthModel.create(req.body);
     res.json({ message: "Signup success" });
   } catch (err: unknown) {
-    if (err instanceof Error) res.status(500).json({ message: err.message });
+    if (err instanceof Error) res
+      .status(500)
+      .json({
+        message: "Signup failed. Email or mobile may already be in use",
+      });
   }
 };
 

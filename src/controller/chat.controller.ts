@@ -38,6 +38,7 @@ export const fetchChats = async(req: SessionInterface, res: Response) => {
             ...item,
             file: {
               path: item.file.path && (await downloadObject(item.file.path)),
+              key: item.file.path,
               type: item.file.type,
             },
           };
