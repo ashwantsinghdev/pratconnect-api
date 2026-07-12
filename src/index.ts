@@ -4,7 +4,7 @@ dotenv.config()
 import mongoose from "mongoose"
 mongoose.connect(process.env.DB!)
 
-import  express  from "express"
+import  express, { Request, Response }  from "express"
 import { createServer } from "http"
 import cors from "cors"
 import cookieParser from "cookie-parser"
@@ -47,8 +47,6 @@ app.use("/friend", AuthMiddleware, FriendRouter);
 app.use("/chat",AuthMiddleware, ChatRouter);
 app.use("/post", AuthMiddleware, PostRouter);
 app.use("/twilio", AuthMiddleware, TwilioRouter);
-
-
-
-
-
+app.use("/hello",(req:Request,res:Response)=>{
+    res.send("hello")
+} )
