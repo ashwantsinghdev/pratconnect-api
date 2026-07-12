@@ -8,7 +8,7 @@ RUN npm install --only=production
 
 COPY . .
 
-RUN npm build
+RUN npm run build
 
 RUN npm install pm2 -g
 
