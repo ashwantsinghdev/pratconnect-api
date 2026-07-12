@@ -24,22 +24,32 @@ jobs:
 
     - name: Build and push docker image
       run: |
-        docker build -t ${{secrets.DOCKER_USERNAME}}/pratconnect:latest .
-        docker push ${{secrets.DOCKER_USERNAME}}/pratconnect:latest
+        docker build -t ${{ secrets.DOCKER_USERNAME }}/pratconnect:latest .
+        docker push ${{ secrets.DOCKER_USERNAME }}/pratconnect:latest
 
     - name: Deploy to EC2
       uses: appleboy/ssh-action@master
       with:
-        host: ${{secrets.EC2_HOST}}
-        username: ${{secrets.EC2_USERNAME}}
-        key: ${{secrets.EC2_SECRET}}
-        envs: |
-          DOCKER_USERNAME=${{secrets.DOCKER_USERNAME}}
-          DOCKER_PASSWORD=${{secrets.DOCKER_PASSWORD}}
+        host: ${{ secrets.EC2_HOST }}
+        username: ${{ secrets.EC2_USERNAME }}
+        key: ${{ secrets.EC2_SECRET }}
         script: |
-          docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
-          docker pull ashwantsingh/pratconnect:latest
+          docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+          docker pull ${{ secrets.DOCKER_USERNAME }}/pratconnect:latest
           docker stop app || true
           docker rm app || true
-          docker run -d -p 8080:8080 --name app ashwantsingh/pratconnect:latest
-          
+          docker run -d -p 8080:8080 \
+            --name app \
+            -e NODE_ENV="${{ secrets.NODE_ENV }}" \
+            -e DB="${{ secrets.DB }}" \
+            -e PORT="${{ secrets.PORT }}" \
+            -e CLIENT="${{ secrets.CLIENT }}" \
+            -e AUTH_SECRET="${{ secrets.AUTH_SECRET }}" \
+            -e AWS_ACCESS_KEY_ID="${{ secrets.AWS_ACCESS_KEY_ID }}" \
+            -e AWS_SECRET_ACCESS_KEY="${{ secrets.AWS_SECRET_ACCESS_KEY }}" \
+            -e S3_BUCKET="${{ secrets.S3_BUCKET }}" \
+            -e REGION="${{ secrets.REGION }}" \
+            -e S3_URL="${{ secrets.S3_URL }}" \
+            -e TWILIO_SID="${{ secrets.TWILIO_SID }}" \
+            -e TWILIO_AUTH_TOKEN="${{ secrets.TWILIO_AUTH_TOKEN }}" \
+            ${{ secrets.DOCKER_USERNAME }}/pratconnect:latest
